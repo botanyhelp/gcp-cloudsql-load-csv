@@ -1,1 +1,16 @@
-site_name: My Docs
+site_name: GCP upload csv data to Cloud SQL database tables
+nav:
+- Prerequisites:
+    - 'Setup GCP Billing': 'prerequisites/setup_gcp_billing.md'
+    - 'Easy Startup': 'prerequisites/easy_startup.md'
+- GcpUploadCsv:
+    - 'Create Cloud SQL Database': 'gcp_upload_csv/create_cloud_sql_database.md'
+    - '': 'GcpUploadCsv/.md'
+    - '': 'GcpUploadCsv/.md'
+    - '': 'GcpUploadCsv/.md'
+    - '': 'GcpUploadCsv/.md'
+    - '': 'GcpUploadCsv/.md'
+    - '': 'GcpUploadCsv/.md'
+    - '': 'GcpUploadCsv/.md'
+    - '': 'GcpUploadCsv/.md'
+    - '': 'GcpUploadCsv/.md'
