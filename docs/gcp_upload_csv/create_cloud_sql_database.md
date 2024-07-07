@@ -1,4 +1,9 @@
-# Create MySQL database in GCP Cloud SQL
+# Create  CloudSQL Database
 
-* this setp can be automated with gcloud or terraform, but
-* we will do it in the GCP web console
+## Connect to MySQL database again
+
+* we have created a running MysQL server running on new CloudSQL instance from GCP CloudShell
+* ..but we have not yet created our database
+* we got connected in two different ways:
+    * **mysql -u root -p -h 34.44.240.91**
+    * **gcloud sql connect myinstance --user=root**

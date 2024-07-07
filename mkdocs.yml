@@ -4,6 +4,7 @@ nav:
     - 'Setup GCP Billing': 'prerequisites/setup_gcp_billing.md'
     - 'Easy Startup': 'prerequisites/easy_startup.md'
 - GcpUploadCsv:
+    - 'Connect to Cloud SQL Instance/VM': 'gcp_upload_csv/connect_to_cloud_sql_instance.md'
     - 'Create Cloud SQL Database': 'gcp_upload_csv/create_cloud_sql_database.md'
     - '': 'GcpUploadCsv/.md'
     - '': 'GcpUploadCsv/.md'
