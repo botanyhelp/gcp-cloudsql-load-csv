@@ -13,3 +13,4 @@ Cloud SQL API enabled
 here we will setup 3 things in GCP CloudShell so that we have everything we need: project, compute/zone and enable APIs
 * Enable APIs we will use
 * In AWS
+* in github.com we create a fine-grained personal access token, PAT, so that we an authenticate to github more easily from GCP cloudshell
