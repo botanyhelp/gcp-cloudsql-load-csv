@@ -1,0 +1,806 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+#force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+	# We have color support; assume it's compliant with Ecma-48
+	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+	# a case would tend to support setf rather than setaf.)
+	color_prompt=yes
+    else
+	color_prompt=
+    fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+*)
+    ;;
+esac
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+source /google/devshell/bashrc.google
+
+#TTT
+gcloud config set project airy-berm-426714-j7
+gcloud config set compute/zone us-central1-b
+gcloud services enable container.googleapis.com
+gcloud services enable sqladmin.googleapis.com
+#gcloud config get project
+#gcloud config get compute/zone
+# zgcloud container clusters delete my-cluster --async --quiet --zone us-central1-b
+# zgcloud container clusters create my-cluster --zone us-central1-b --project airy-berm-426714-j7
+# gcloud container clusters delete my-cluster --async --quiet --zone us-central1-b
+# gcloud container clusters list
+# watch -n 1 kubectl get pod -o wide
+# watch -n 1 kubectl get pod -n default -o wide
+# watch -n 1 kubectl get pod -A -o wide
+# watch -n 1 "kubectl get pod -A -o wide|grep nginx"
+# kubectl get event --watch
+# kubectl run my-pod --image=alpine --restart=Never --attach --rm date
+# kubectl run my-pod --image=alpine --restart=Never -it --rm sh
+# kubectl run my-pod --image=alpine sh  # NO CRASHES BECAUSE sh EXITS IMMEDIATELY
+# kubectl delete pod/my-pod
+# kubectl run my-pod --image=alpine sleep infinity # RUNS forever but no shell
+# kubectl exec my-pod -- date
+# kubectl exec my-pod -it -- sh
+# kubectl run nginx --image=nginx
+# WE CAN SEE watch TELLS WHICH NODE CONTAINER LANDS ON
+# kubectl run nginx2 --image=nginx
+# kubectl run nginx3 --image=nginx
+# kubectl run nginx4 --image=nginx
+# kubectl exec nginx -- date
+# kubectl logs -f nginx
+# kubectl port-forward nginx 8080:80 # perhaps in a tmux shell so we can run wget
+# curl http://127.0.0.1:8080
+# kubectl run nginx --image=nginx --dry-run=client -o yaml
+# kubectl run nginx --image=nginx --dry-run=client -o yaml >> /tmp/nginx.yaml
+# kubectl apply -f /tmp/nginx.yaml
+# kubectl delete pod/nginx --wait=false
+# kubectl delete pod/my-pod
+# ..to create and watch for disks:
+# watch -n 1 "gcloud compute disks list|grep NAME"
+# gcloud compute disks create my-disk --size=10GB --zone=us-central1-b
+# cat repos/safari_gke_2/lesson_2/life_cycle.yaml
+# kubectl apply -f repos/safari_gke_2/lesson_2/life_cycle.yaml
+# WE SEE BOTH MESSAGES, which means mounting happens first, then entryCommand, then postStarop
+# kubectl exec -i life-cycle -- cat /data/log.txt
+# kubectl delete pod/life-cycle
+# kubectl apply -f repos/safari_gke_2/lesson_2/life_cycle.yaml
+# WE SEE THE preStop MESSAGE, which means we get to do something before Termination
+# kubectl delete pod/my-pod
+# gcloud compute disks delete my-disk
+# WE START CONTAINER WITH LIVEREADINESS PROBE
+# cat repos/safari_gke_2/lesson_2/nginx-self-healing.yaml 
+# kubectl apply -f repos/safari_gke_2/lesson_2/nginx-self-healing.yaml 
+# kubectl exec pod/nginx-self-healing -- touch /ready.txt
+# kubectl exec pod/nginx-self-healing -- rm /usr/share/nginx/default/index.html
+# kubectl delete pod/nginx-self-healing --wait=false
+# watch "kubectl get namespace --sort-by='.metadata.creationTimestamp' --no-headers|tac"
+# kubectl create namespace ns1
+# kubectl create namespace ns2
+# kubectl create namespace ns3
+# kubectl run nginx --image=nginx --restart=Never --namespace=ns1
+# kubectl run nginx --image=nginx --restart=Never --namespace=ns2
+# kubectl run nginx --image=nginx --restart=Never --namespace=ns3
+# NOTICE THAT --show-labels SHOWS run=nginx2 BECAUSE PODS STARTED WITH kubectl run GET LABELED WITH run= BY SYSTEM
+# watch -n 1 "kubectl get pods --show-labels"
+# DELETE ALL PODS
+# kubectl delete all --all
+# LABELS
+# kubectl run nginx1 --image=nginx -l "env=prod,author=Bert"
+# kubectl run nginx2 --image=nginx -l "env=dev,author=Ernie"
+# kubectl run nginx3 --image=nginx -l "env=dev,author=Mohit"
+# LABELS -L GIVES LABELS env,author THE FULL COLUMN THEY DESERVE AS FIRST CLASS K8S OBJECTS
+# watch -n 1 "kubectl get pods -L env,author"
+# kubectl get pods -l author!=Ernie
+# kubectl get pods -l author!=Ernie -L env,author
+# kubectl get pods -l "author in (Ernie,Mohit)" -L env,author
+# LESSON4 01:09:00 HA AND SERVICE DISCOVERY
+# OBSERVE THAT pod CONTROLLED BY replicaset CONTROLLED BY deployment:
+# watch -n 1 "kubectl get pods"
+# watch -n 1 kubectl get replicaset
+# watch -n 1 kubectl get deployment
+# NOTICE THE pod NAME IS deployment-replicaset-randomPodId LIKE nginx-7854ff8877-kb9fn
+# kubectl create deployment nginx --image=nginx
+# kubectl delete deployment/nginx 
+# RELEASE MANAGEMENT: WE CHANGE image OF deployment AND WILL SEE MIGRATION IN THE watch OUTPUTS
+# kubectl create deployment nginx --image=nginx --replicas=3
+# kubectl set image deploy/nginx nginx=nginx:1.9.1
+# kubectl describe deployment nginx|grep Image
+# ROLLING AND BLUE-GREEN DEPLOYMENTS
+# kubectl apply -f repos/safari_gke_2/lesson_3/nginx-v1-initial.yaml 
+# kubectl apply -f repos/safari_gke_2/lesson_3/nginx-v2-recreate.yaml 
+# kubectl apply -f repos/safari_gke_2/lesson_3/nginx-v3-rolling-one-at-a-time.yaml 
+# sleep 5; kubectl apply -f repos/safari_gke_2/lesson_3/nginx-v4-blue-green.yaml 
+# STATIC SCALING
+# kubectl apply -f repos/safari_gke_2/lesson_3/nginx-limited.yaml 
+# sleep 3; kubectl scale deploy/nginx-declarative --replicas=3
+# sleep 3; kubectl scale deploy/nginx-declarative --replicas=5
+# sleep 3; kubectl scale deploy/nginx-declarative --replicas=1
+# AUTO SCALING
+# watch -n 1 kubectl get hpa
+# sleep 3; kubectl autoscale deploy/nginx-declarative --min=1 --max=3 --cpu-percent=5
+# kubectl get pod
+# kubectl exec -it nginx-declarative-b4d486675-cfbvq -- sh
+# uname -a
+# while true; do true; done
+# exit
+# DURING MY SESSION, GCP DISCONNECTED, SO MY LINUX INFINITE LOOP BECAME INACCESSIBLE
+# WHEN I RETURNED AND kubectl exec AGAIN, I SEE THAT nginxIMAGE DOES NOT HAVE ps OR kill COMMAND SO CANNOT FIX??
+# TO FIX, I MADE A COPY OF nginx-limited.yaml WITH NEW IMAGE THAT DOES HAVE ps/kill THIS ONE: nginx:1.22-alpine
+# kubectl get pods
+# kubectl describe pod nginx-declarative-5485cf4b7-7ztsq|grep mage
+# cp nginx-limited.yaml nginx-limitedMOD.yaml 
+# vim nginx-limitedMOD.yaml 
+# AND RAN kubectl apply -f nginx-limitedMOD.yaml 
+# kubectl get pods
+# kubectl exec -it nginx-declarative-abc123-def456 -- sh
+# which kill
+# which ps
+# ps
+# exit
+# BUT BECAUSE I CHANGED AND APPLIED YAML DEPLOYMENT, ALL PODS WERE REPLACED INCLUDING THE INFINITE LOOPING ONE, SO THE CPUS GOT QUIET
+# AND EVENTUALLY THE STILL EXISITING, STILL-APPLYING-TO-EXISTING-DEPLOYMENT, HPA, NOW WITH 3 PODS WITH 0% CPUS, DOWNSCALES TO 1 POD AGAIN
+# SO WE LEARN THAT DEPLOYMENTS LIVE, PODS GET REPLACED WHEN MIGRATING, AS I DID WITH nginx-limitedMOD.yaml, AND HPA ON THAT STILL LIVING DEPLOYMENT STILL CONTROLS IT
+# AND WE LEARN THAT HPA DOWNSCALES SLOWLY AND 3 PODS KEPT RUNNING EVEN WITH 0% CPUS FOR A FEW MINUTES
+# NEXT WE KILL THE HPA AND THE REMAINING POD BUT NOTICE THAT THE POD GETS RESTARTED BECAUSE OUR DEPLOYMENT SPECIFIES STATIC SCALING WITH: replicas: 1
+# kubectl get hpa
+# kubectl delete hpa/nginx-declarative
+# kubectl get pod
+# kubectl delete/pod nginx-declarative-abc123-def456
+# kubectl get pod
+# WE SEE THAT OUR EXISTING DEPLOYMENT HAS BEEN RUNNING FOR THE 2 HOURS WE HAVE BEEN PLAYING WITH IT, NEVER DIED:
+# kubectl get deployments
+# # # SERVICE: WE WANT TO WATCH IT: 
+# # # watch -n 1 kubectl get service
+# # ## kubectl create deployment nginx --image=nginx --replicas=3
+# cat repos/safari_gke_2/lesson_3/update_hostname.sh
+# /bin/sh repos/safari_gke_2/lesson_3/update_hostname.sh
+# kubectl expose deploy/nginx --port=80
+# cat repos/safari_gke_2/lesson_3/service.yaml 
+# kubectl apply -f repos/safari_gke_2/lesson_3/service.yaml 
+# kubectl run test --rm -it --image=alpine --restart=Never -- sh
+# wget -q -O - http://nginx
+# wget -q -O - http://nginx
+# wget -q -O - http://nginx
+# AND WE NOTICE THAT BOTH service OBJECTS NAMED nginx AND nginx2 ARE BOTH exposeING THE SAME deployment OBJECT NAMED nginx SO BOTH DNS ENDPOINTS REACH THE SAME 3 PODS
+# wget -q -O - http://nginx2
+# wget -q -O - http://nginx2
+# wget -q -O - http://nginx2
+# exit
+# EXTERNAL LOAD BALANCER VIA SERVICE
+# FIRST WE WATCH FOR LOAD BALANCER
+# watch -n 1 gcloud compute forwarding-rules list
+# kubectl expose deploy/nginx --name nginx3 --type=LoadBalancer --port=80
+# kubectl get service
+# curl -S http://35.192.177.41
+# curl -S http://35.192.177.41
+# curl -S http://35.192.177.41
+# while true; do curl -S http://35.192.177.41 ; sleep 1 ; done
+# ZERO DOWNTIME DEPLOYMENTS:
+# sleep 0.1; kubectl get pod -o wide; kubectl get replicaset; kubectl get service; kubectl get deployment; cloud compute forwarding-rules list;
+# kubectl create deployment site --image=nginx --replicas=3
+# kubectl expose deploy/site --port=80 --type=LoadBalancer --session-affinity=ClientIP
+# cat repos/safari_gke_2/lesson_3/watch.sh
+# ./repos/safari_gke_2/lesson_3/watch.sh
+# kubectl set image deploy/site *=httpd
+# kubectl get pod
+# kubectl describe pod site-74d6655576-8fpxk|grep mage
+# CREATE MYSQL INSTANCE
+gcloud services enable sqladmin.googleapis.com
+# gcloud sql instances create myinstance --region=us-central1 --tier=db-g1-small 
+# gcloud sql connect myinstance --user=root --quiet
+# gcloud sql instances describe myinstance
+# NYET gcloud services enable containerregistry.googleapis.com
+# NYET gcloud services enable servicenetworking.googleapis.com
+# NYET gcloud services enable compute.googleapis.com
+# NYET gcloud services enable privatevpcconnection.googleapis.com
+# NYET gcloud services enable googleservicenetworkingconnection.googleapis.com
+# gcloud services list
+# https://cloud.google.com/sql/docs/mysql/configure-private-services-access#gcloud
+# EXAMPLE: The following example allocates an IP range that allows resources in the VPC network my-vpc-network to connect to Cloud SQL instances using private IP.
+# NO gcloud compute addresses create google-managed-services-my-vpc-network --global --purpose=VPC_PEERING --prefix-length=16 --network=projects/myprojectid/global/networks/myvpcnetwork --project=my-project
+### /airy-berm-426714-j7/global/networks/default --project=airy-berm-426714-j7
+### vpc-network --global --purpose=VPC_PEERING --prefix-length=16 --network=projects/airy-berm-426714-j7/global/networks/default --project=airy-berm-426714-j7
+gcloud compute networks list
+# https://cloud.google.com/sql/docs/mysql/connect-admin-ip
+# # WOKRS WITH PUBLIC IP;
+### # gcloud sql connect myinstance --user=root
+### mysql> create database ufos
+###     -> ;
+### Query OK, 1 row affected (0.03 sec)
+# NYET gcloud services enable compute.googleapis.com
+# NYET gcloud services enable privatevpcconnection.googleapis.com
+# NYET gcloud services enable googleservicenetworkingconnection.googleapis.com
+# vim xaa2
+# mysql> create database ufos
+# mysql> use ufos
+# mysql -u root -p -h 104.154.64.189 < xaa2 
+# Enter password: 
+# 
+# real    0m38.173s
+# user    0m0.093s
+# sys     0m0.073s
+# LOAD DATA LOCAL INFILE 'xaa2.csv' INTO TABLE ufosightings FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+# https://www.googlecloudcommunity.com/gc/Databases/ERROR-2068-HY000-LOAD-DATA-LOCAL-INFILE-file-request-rejected/m-p/517103
+# mysql> LOAD DATA LOCAL INFILE 'xaa2.csv' INTO TABLE ufosightings FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+# ERROR 2068 (HY000): LOAD DATA LOCAL INFILE file request rejected due to restrictions on access.
+# OPTION --local-infile=1  APPEARS TO BE REQUIRED OR ELSE WE GET ERRORS
+# mysql --local-infile=1  -u root -p -h 104.154.64.189 
+# gsutil mb -c regional -l us-central1 gs://lansdowne1961-ufos-xaa-csv
+# gsutil cp xaa2.csv gs://lansdowne1961-ufos-xaa-csv
+# https://cloud.google.com/sql/docs/mysql/import-export/import-export-csv#rest-v1beta4_1
+# gcloud sql import csv myinstance gs://lansdowne1961-ufos-xaa-csv/xaa2.csv --database=ufos --table=ufosightings
+# YES: gcloud storage buckets add-iam-policy-binding gs://lansdowne1961-ufos-xaa-csv --member=serviceAccount:p845866755810-q7pvxh@gcp-sa-cloud-sql.iam.gserviceaccount.com --role=roles/storage.objectAdmin
+# gcloud sql import csv myinstance gs://lansdowne1961-ufos-xaa-csv/xaa2.csv --database=ufos --table=ufosightings
+# Data from [gs://lansdowne1961-ufos-xaa-csv/xaa2.csv] will be imported to [myinstance].
+# Do you want to continue (Y/n)?  
+# Importing data into Cloud SQL instance...done.
+# Imported data from [gs://lansdowne1961-ufos-xaa-csv/xaa2.csv] into [https://sqladmin.googleapis.com/sql/v1beta4/projects/airy-berm-426714-j7/instances/myinstance].
+# https://www.percona.com/blog/predicting-how-long-data-load-would-take/
+# https://stackoverflow.com/questions/2463602/mysql-load-data-infile-acceleration
+# mysql> set autocommit=0;
+# mysql> select @@autocommit;
+# mysql> LOAD DATA LOCAL INFILE 'xaa3.csv' INTO TABLE ufosightings FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+# Query OK, 9930001 rows affected, 65535 warnings (2 min 41.06 sec)
+# Records: 9930001  Deleted: 0  Skipped: 0  Warnings: 7380009
+# 
+# gcloud sql instances describe myinstance|grep serviceAccountEmailAddress
+# gcloud storage buckets add-iam-policy-binding gs://lansdowne1961-ufos-xaa-csv --member=serviceAccount:p845866755810-2vvki8@gcp-sa-cloud-sql.iam.gserviceaccount.com --role=roles/storage.objectAdmin
+# gcloud sql connect myinstance --user=root
+# time gcloud sql import csv myinstance gs://lansdowne1961-ufos-xaa-csv/xaa2.csv --database=ufos --table=ufosightings                            
+# Data from [gs://lansdowne1961-ufos-xaa-csv/xaa2.csv] will be imported to [myinstance].
+# 
+# Do you want to continue (Y/n)?  
+# 
+# Importing data into Cloud SQL instance...done.                                                                                                                                                
+# Imported data from [gs://lansdowne1961-ufos-xaa-csv/xaa2.csv] into [https://sqladmin.googleapis.com/sql/v1beta4/projects/airy-berm-426714-j7/instances/myinstance].
+# 
+# real    0m20.527s
+# user    0m0.868s
+# sys     0m0.123s
+# AFTERWARDS WE SEE 10MILLION RECORDS, BUT IF WE RUN AGAIN, THEN WE STILL SEE ONLY 10MILLION RECORDS, NOT EXPECTED 20MILLION, SO APPEARS THERE IS DEFAULT TRUNCATE TABLE
+# cat  xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv  |gzip > /var/tmp/xaa30.csv.gz
+# gsutil cp xaa30.csv.gz gs://lansdowne1961-ufos-xaa-csv
+# gsutil ls gs://lansdowne1961-ufos-xaa-csv
+# time gcloud sql import csv myinstance gs://lansdowne1961-ufos-xaa-csv/xaa30.csv.gz --database=ufos --table=ufosightings
+# time gcloud sql import csv myinstance gs://lansdowne1961-ufos-xaa-csv/xaa30.csv.gz --database=ufos --table=ufosightings
+# Data from [gs://lansdowne1961-ufos-xaa-csv/xaa30.csv.gz] will be imported to [myinstance].
+# 
+# Do you want to continue (Y/n)?  
+# 
+# Importing data into Cloud SQL instance...failed.                                                                                                                                              
+# ERROR: (gcloud.sql.import.csv) Operation https://sqladmin.googleapis.com/sql/v1beta4/projects/airy-berm-426714-j7/operations/d8176b15-0a92-4c28-b912-2e6800000032 is taking longer than expected. You can continue waiting for the operation by running `gcloud beta sql operations wait --project airy-berm-426714-j7 d8176b15-0a92-4c28-b912-2e6800000032`
+# 
+# real    10m1.663s
+# user    0m1.975s
+# sys     0m0.114s
+# smoothtommy@cloudshell:~ (airy-berm-426714-j7)$ gcloud beta sql operations wait --project airy-berm-426714-j7 d8176b15-0a92-4c28-b912-2e6800000032
+# Waiting for [https://sqladmin.googleapis.com/sql/v1beta4/projects/airy-berm-426714-j7/operations/d8176b15-0a92-4c28-b912-2e6800000032]...failed.                                              
+# ERROR: (gcloud.beta.sql.operations.wait) Operation https://sqladmin.googleapis.com/sql/v1beta4/projects/airy-berm-426714-j7/operations/d8176b15-0a92-4c28-b912-2e6800000032 is taking longer than expected. You can continue waiting for the operation by running `gcloud beta sql operations wait --project airy-berm-426714-j7 d8176b15-0a92-4c28-b912-2e6800000032`
+# smoothtommy@cloudshell:~ (airy-berm-426714-j7)$
+# smoothtommy@cloudshell:~ (airy-berm-426714-j7)$ gcloud beta sql operations wait --project airy-berm-426714-j7 d8176b15-0a92-4c28-b912-2e6800000032
+# Waiting for [https://sqladmin.googleapis.com/sql/v1beta4/projects/airy-berm-426714-j7/operations/d8176b15-0a92-4c28-b912-2e6800000032]...done.                                                
+# NAME: d8176b15-0a92-4c28-b912-2e6800000032
+# TYPE: IMPORT
+# START: 2024-06-29T13:16:56.127+00:00
+# END: 2024-06-29T13:35:24.246+00:00
+# ERROR: -
+# STATUS: DONE
+# smoothtommy@cloudshell:~ (airy-berm-426714-j7)$ 
+# smoothtommy@cloudshell:~ (airy-berm-426714-j7)$ gcloud sql connect myinstance --user=root 
+# Allowlisting your IP for incoming connection for 5 minutes...done.                                                                                                                            
+# Connecting to database with SQL user [root].Enter password: 
+# Welcome to the MySQL monitor.  Commands end with ; or \g.
+# Your MySQL connection id is 22277
+# Server version: 8.0.31-google (Google)
+# 
+# Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+# 
+# Oracle is a registered trademark of Oracle Corporation and/or its
+# affiliates. Other names may be trademarks of their respective
+# owners.
+# 
+# Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+# 
+# mysql> use ufos
+# Reading table information for completion of table and column names
+# You can turn off this feature to get a quicker startup with -A
+# 
+# Database changed
+# mysql> select count(*) from ufosightings;
+#   +-----------+
+# | count(*)  |
+# +-----------+
+# | 119160012 |
+# +-----------+
+# 1 row in set (4 min 36.86 sec)
+# 
+# mysql>    exit
+# Bye
+# smoothtommy@cloudshell:~/repos/gcp-cloudsql-load-csv/static (airy-berm
+#               
+# real    130m7.961s
+# user    128m54.759s
+# sys     108m31.681s
+# 
+# real    130m7.961s
+# user    128m54.759s
+# sys     108m31.681s
+#   300  cat somefile.txt somefile.txt |gzip > somefile2.txt.gz
+#   307  cat  xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv  |gzip > /var/tmp/xaa30.csv.gz
+#   312  echo # cat  xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv  |gzip > /var/tmp/xaa30.csv.gz
+#   313  echo "# cat  xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv xaa3.csv  |gzip > /var/tmp/xaa30.csv.gz" >> .bashrc 
+#   366  history|grep gzip
+#   597  history|grep gzip
+#   656  time /bin/sh bash_looper.sh |gzip  > /var/tmp/ufos100Million.csv.gz
+#   661  history |grep gzip |tail >> ~/.bashrc 
+# smoothtommy@cloudshell:~ (airy-berm-426714-j7)$ ls -lh /var/tmp/
+# total 28G
+# -rw-rw-r-- 1 smoothtommy smoothtommy   51 Jul  7 18:24 bash_looper.sh
+# -rw-rw-r-- 1 smoothtommy smoothtommy 801K Jul  7 17:18 ufos1000.csv
+# -rw-rw-r-- 1 smoothtommy smoothtommy  28G Jul  7 20:41 ufos100Million.csv.gz
+# garba safari_gke_2/lesson_4/ 02:00:00
+# ./repos/safari_gke_2/lesson_4/
+# we have some tmux observability:
+# here we have a system-generated label called job-name
+# watch -n 1 kubectl get pod -L job-name
+# here we watch for resource type called jobs, so we have a history of what happened before
+# watch -n 1 kubectl get jobs
+# here the -w flag is more like a log-following approach to watching a job, a real-time approach
+# kubectl get -w job
+# ..and now that we have 3 observers going we start our first single-batch procss job, a disposable job, on ad-hoc job and then is forgotten:
+# kubectl create job two-times --image=alpine -- sh -c "for i in \$(seq 1); do echo \$((\$i*2));done
+# first we fire up our cluster again:
+# gcloud services enable container.googleapis.com
+# gcloud container clusters create my-cluster --zone us-central1-b --project airy-berm-426714-j7
+# the kubectl above and the 3 observers all show the job running, which in this case does not write to database or web service but simply prints to STDOUT
+# we see the pod gets a funny name like two-times-vvs4t, and so we can check the logs of that pod by its label:
+# kubectl logs -l job-name=two-times
+# ..and we see 2,4,6,8,10,12.14,16,18,20 each on a line from the echo in the inline shell script
+# yay, we have observed the simplest kind of batch process
+# 02:05:00 we do slightly more complex, we keep our 3 observers and add a fourth:
+# while true; do kubectl describe job/even-seconds | grep Statuses; sleep 1; done
+# ..where we can notice our job name will be even-seconds, and use describe VERB, not get VERB, and grep for word Statuses; the loop for now will error because we did not yet create job
+# because this job is more complex, we implement as script instead of as inline shell
+# ~/repos/safari_gke_2/lesson_4/
+# cat repos/safari_gke_2/lesson_4/even-seconds.yaml 
+# we get the date and check if the seconds is even, fail, exit 1; otherwise success exit 0; and in that way we have the job monitor itself to see if it reaches 3 successful runs, as the spec completions:3 requires, and we observe to see it all happen
+# spec parallelism:3 says to start 3 pods, but if it is 1,2 or 3, no matter how many pods are running, we still need to see 3 completions no matter what
+# cd repos/safari_gke_2/lesson_4/
+# kubectl apply -f even-seconds.yaml
+# in our observers we see 3 pods running; job even-seconds COMPLETIONS 0/3; many errors in get pod -L job-name, and so they restart, 
+# 02:10:45 we see COMPLETIONS 0/3 even though we see 3 Completed, so we check logs:
+# kubectl logs -l job-name=even-seconds
+# ..shows us that, because in parallel, they all got the same numer, 34, meaning they all got an even on the same exact second they see in the output of date command; we run again:
+# kubectl apply -f even-seconds.yaml
+# but we first need to delete that job:
+# kubectl delete job/even-seconds
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ kubectl delete job/even-seconds
+#   job.batch "even-seconds" deleted
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ kubectl apply -f even-seconds.yaml 
+#   ^[[Ajob.batch/even-seconds created
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ kubectl logs -l job-name=even-seconds
+#   FAILURE: 51
+#   FAILURE: 51
+#   FAILURE: 51
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ kubectl logs -l job-name=even-seconds
+#   SUCCESS: 52
+#   SUCCESS: 52
+#   SUCCESS: 52
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ 
+# kubectl delete job --all
+# next we look at most complicated job, when the job does not know how many times it needs to run
+# ..there is no "completions:" attribute, but we instead have a contract: the first pod to return 0, success, signals completion of the job, and all other pods realize nothing left to do
+# to simulate, we need an external process, outside the pod, that tells it there is something to do
+# ..but we will go further and implement a proper distributed batch job, where the task is split, assigned to multiple pods, where they work on diffferent parts of the task
+# cat ~/repos/safari_gke_2/lesson_4/startQueue.sh 
+# ./startQueue.sh 
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ ./startQueue.sh 
+#   service/queue created
+#   pod/queue created
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ echo "# !!" >> ~/.bashrc 
+#   echo "# ./startQueue.sh " >> ~/.bashrc 
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ kubectl run test --rm -ti --image=alpine --restart=Never -- sh
+#   If you don't see a command prompt, try pressing enter.
+#   / # nc -w 1 queue 1080
+#   / # nc -w 1 queue 1080
+#   2/ # exit
+#   pod "test" deleted
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ ./startQueue.sh 
+#   pod "queue" deleted
+#   service "queue" deleted
+#   
+#   service/queue created
+#   pod/queue created
+#   smoothtommy@cloudshell:~/repos/safari_gke_2/lesson_4 (airy-berm-426714-j7)$ 
+# 
+# cat ~/repos/safari_gke_2/lesson_4/multiplier.yaml 
+# ..where we see no "completions" because exit 0, success, indicates completion, if no pod ever returns 0, then it goes forever
+# kubectl apply -f multiplier.yaml 
+# kubectl logs -l job-name
+# kubectl get jobs
+# other pods do not need to know when another pod returned success, 0, because the job controller will do that
+# but how do we know we have succeeded? 02:19:45
+# we can see which pod found the 200, the last one, the one that succeeded
+# kubectl logs -l job-name=multiplier
+# kubectl logs -l job-name=multiplier --tail=-1|wc
+# kubectl get pods
+# kubectl logs multiplier-ktt94|tail 
+# kubectl delete job --all
+# watch -n 1 kubectl get cronjob
+# ..but we keep our get jobs and get pod -L job-name watcher also
+# kubectl delete pod/queue
+# crontab.guru
+# cat ~/repos/safari_gke_2/lesson_4/simple.yaml 
+# kubectl apply -f simple.yaml 
+# kubectl logs simple-28677147-n2jqs
+# DaemonSet controller, both types: file and TCp
+# gcloud container clusters list
+
+# watch -n 1 kubectl get daemonset
+# watch -n 1 kubectl get deployment
+# watch -n 1 kubectl get pod
+# start with TCP-based Daemons
+# cat ~/repos/safari_gke_2/lesson_4/logDaemon.yaml 
+# daemonsets, like jobs/cronjobs/deployments all stand up a pod, so we see that in daemonset yaml
+# a pod listening on 6666 and writing to /var/node_log
+# we see template/selector spec similar to how we would do for a deployment
+# the difference will be how they are physically deployed, and to observe that:
+# we alter our pod observability command so that it includes info about the node in which it will run
+# with -o wide
+# cd ~/repos/safari_gke_2/lesson_4/
+# kubectl apply -f logDaemon.yaml
+# we see 3 nodes and that daemonset has 3, not because of ReplicaSet but because there are 3 nodes, so we have exactly 3 pods
+# we will observe daemonset with logDaemonClient.yaml which is a deployment and is why we are observing deployments
+# kubectl apply -f logDaemonClient.yaml
+# cat ~/repos/safari_gke_2/lesson_4/logDaemonClient.yaml 
+# the pod def run nc on port 6666 and writes whatever it gets on port 6666 to file at /var/node_log
+# the client is a normal pod that communicates with daemon log on port 6666, and daemonset does NOT require a service or proxy, not the IP addres or locatoin, or the identity of that pod because it knows, for sure, that its sittin gon the host
+# hence we see funny introspection lines of logDaemonClient.yaml where it get  node IP address as status.hostIP
+# that is NOT the IP address of the log daemon pod but is taht of the host in which all of the pods sharing the same context share
+# the client knows, for sure, that the daemonset is running on this host, because we know it is running on every host/node, therefore it does not need IP/service/podIdentity, only hostIP
+# that status.hostIP is not the IP of the logDaemon pod, but is the IP address of the host in which all of the pods sharing the same context share
+# logDaemonClient.yaml uses nc also, but as a client and connects to port 6666 and says: Greetings from $HOSTNAME which will end up in logDaemon /var/node_log
+# logDaemonClient.yaml also has replicas:4 which makes it likely that 2 pods will land on the same node, of which we run 3, which will make results more interesting
+# logDaemonClient.yaml is implemented as a deployment, which is why we are watching that too:
+# kubectl get deployment; kubectl get daemonset;kubectl get pod -o wide; kubectl get pod -L job-name
+# we notice that the node running where 2 clients are running might have a busier log because its being written by 2 pods, and we look at the logs of the logDaemon running on that node:
+# kubectl exec logd-ljmhj -- cat /var/node_log
+# Daemonsets allow for client and server to both be on same host, as close as possible, not on different node or different data center even
+# File-based Deaemonsets 02:39:15
+# kubectl delete deployment client
+# echo "kubectl get deployment;"; kubectl get deployment; echo "kubectl get daemonset"; kubectl get daemonset; echo "kubectl get pod -o wide"; kubectl get pod -o wide; echo "kubectl get pod -L job-name"; kubectl get pod -L job-name
+# we do a bit different:
+# logCompressor.yaml
+# cat ~/repos/safari_gke_2/lesson_4/logCompressor.yaml 
+# ..where we see spec:volumes:hostPath meaning the filesystem on the VM on that node
+# ..and we tar up all of the files in /var/log/ every 60 seconds, even though we might do that more like weekly in real life
+# kubectl apply -f logCompressor.yaml 
+# ..and we see one daemonized pod, so 3 pods, one on each node where we see stuff tgz made very 60 secs
+# kubectl exec logcd-54vnw -- find /var/log -name "*.gz"
+# ..and now we look at client side of things
+# cat ~/repos/safari_gke_2/lesson_4/logCompressor.yaml 
+# kubectl apply -f logCompressor.yaml 
+# cat ~/repos/safari_gke_2/lesson_4/logCompressor.yaml 
+# kubectl exec logcd-5fpnt -- find /var/log -name "*.gz"
+# ..and now we have , as expected, one pod per node, and we need to implement, again, the client side of things
+# remember that the hostPath is not a new path or virtual path, its a physical path on the host/node
+# if we look, we will see that there are already log files there, lots of unrelated logs, kubernetes-related logs, dozens:
+# kubectl exec logcd-5fpnt -- find /var/log -name "*.log"
+# now we will write to that log from a client pod, as before, but this time we write not to a TCP port but to a log file we know is there on the node
+
+# cat ~/repos/safari_gke_2/lesson_4/logCompressorClient.yaml 
+# kubectl apply -f logCompressorClient.yaml 
+# kubectl exec logcd-5fpnt -- find /var/log -name "*.gz"
+# ..and again, we chose the node with 2 pods on it and we see that the tar of log files shows 2 log files because 2 pods are writing 
+# kubectl exec logcd-5fpnt -- tar -tf /var/log/all-logs-2024-07-11.tar.gz
+# var/log/client2-57855b8f84-j28jh.log
+# var/log/client2-57855b8f84-qgxzh.log
+# lesson5 configuration and StatefulSets
+# containers in pods typically run regular linux like alpine linux which means k8s can assume presence of a shell and env variables, unlike a low-level virtualization platform
+# every programming language can access env variables and thus evn vars are a univeral and portable approach to passing configuration details into applications
+# k8s is NOT limited to using env vars and can also make config available via a virtual filesystem, and other tricks such as passing key-value pairs from files, and base64 hiding
+# first we can see the bad alternative of hard-coded configuration:
+# cat ~/repos/safari_gke_2/lesson_5/podHardCodedEnv.yaml 
+# in podHardCodedEnv.yaml we see a not-too-bad hard coding because config is being passed as pod YAML env variables, 
+# ..which is better than having it hardcoded into application code, better than being hardcoded into docker container/image
+# ..but if any config in podHardCodedEnv.yaml changes, then we would have to update that YAML, maybe in lots of places 
+# kubectl apply -f podHardCodedEnv.yaml 
+# lets also add to observer configmap we will soon make, and see the pod we just started:
+# echo "kubectl get deployment;"; kubectl get deployment; echo "kubectl get daemonset"; kubectl get daemonset; echo "kubectl get pod -o wide"; kubectl get pod -o wide; echo "kubectl get pod -L job-name"; kubectl get pod -L job-name; echo "kubectl get configmap"; kubectl get configmap;
+# we check the logs of that pod and see the 2 env vars its hard-yaml-coded config has set:
+# kubectl logs my-pod
+# now lets fix and move this config to outside of the pod manifest
+# cat ~/repos/safari_gke_2/lesson_5/simpleconfigmap.yaml 
+# kubectl apply -f simpleconfigmap.yaml 
+# kubectl describe configmap/data-sources
+# we can also create configmap imperatively, if we want:
+# kubectl create configmap ...
+# kubectl delete pod/my-pod
+# Instead of hardcoding, we want something the pod can refer to externally:
+# here we see very similar pod yaml but this time, instead of hardcoding, we use envFrom: to refer to the configmap by name
+# cat ~/repos/safari_gke_2/lesson_5/podWithConfigMapReference.yaml 
+# kubectl apply -f podWithConfigMapReference.yaml 
+# we see the same output of the same 2 env vars:
+# kubectl logs my-pod
+# ..but what if we have 50 or 60 key-valu pairs?
+# this semi-hard-coded yaml allows us to cherry pick the specific variables, maybe from a large 50-60-variables configmap, where we specify the keys of the variables we want:
+# cat ~/repos/safari_gke_2/lesson_5/podManifest.yaml 
+# kubectl delete pod my-pod
+# kubectl apply -f ./podManifest.yaml 
+# kubectl logs my-pod
+# kubectl delete pod my-pod
+# Next we want to externalize bigger pieces of data, not teeny tiny key-value pairs, but longer data like a business address for a web page footer:
+# cat ~/repos/safari_gke_2/lesson_5/configMapLongText.yaml 
+# recall that we set env vars in podHardCodedEnv.yaml and those env vars, once set and propogated, cannot be changed without restarting the pods
+# ..but there is a way to read the configuration differently and we DONT need to modify how we store the configuration
+# kubectl apply -f configMapLongText.yaml 
+# kubectl describe configmap/data-sources
+# ..and now we can see another way for the pod to consume that data which is not through env var approach, but by mounting those attributes in a virtual filesystem:
+# cat ~/repos/safari_gke_2/lesson_5/podManifestVolume.yaml 
+# that volume could be lots of things: a disk, host disk, virtual-memory-drive, attached to a google-drive
+# ..but also can attach to a ConfigMap and the result of that is the attributes declared in that ConfigMap will appear as files, and the values will appear as contents of those files
+# in volumeMounts: we have the mountPath: where the files will appear
+# the pod in podManifestVolume.yaml installs inotify-tools package which has inotifywait command which allows us to watch for file changes, and when it changes, update that reference data
+# ..and in this way we can propogate live reference data
+
+# kubectl apply -f podManifestVolume.yaml 
+# kubectl logs my-pod
+# ..where we can notice in those logs that inotify-tools was installed, and becuase pod runs ls, we can see that those configuration appear as files
+# ..which we actually use because the pod is monitoring one of those files, address, and when it is modified, will print that value again
+# now lets try a modified version of the ConfigMap:
+
+# cat ~/repos/safari_gke_2/lesson_5/configMapLongText_changed.yaml 
+# kubectl apply -f configMapLongText_changed.yaml 
+# we see, not right away, because of 30-second propagation window, that the data-sources ConifigMap will have its new configuration, new address, propagated, 
+# ..and when it is propagated, it will appear not only in that virtual filesystem, such that the file named address contents will change, 
+# ..but also the value of that file will change with the new payload, and also the file will be detected as changed
+# ..and thus we can use an application library or shell commnads to check that notification
+# we see the new address:
+# kubectl logs my-pod
+# we could have set logs to monitor the logs continuously 
+# yay, we have seen how we can implement live config changes with k8s ConfigMap
+# kubectl delete configmap/data-sources
+# we add another obersver for secret
+# echo "kubectl get deployment;"; kubectl get deployment; echo "kubectl get daemonset"; kubectl get daemonset; echo "kubectl get pod -o wide"; kubectl get pod -o wide; echo "kubectl get pod -L job-name"; kubectl get pod -L job-name; echo "kubectl get configmap"; kubectl get configmap; echo "kubectl get secret"; kubectl get secret; echo "kubectl get secret/my-secrets -o yaml"; kubectl get secret/my-secrets -o yaml;
+# kubectl create secret generic my-secrets --from-literal=mysql_user=ernie --from-literal=mysql_pass=HushHush
+# echo "kubectl get deployment;"; kubectl get deployment; echo "kubectl get daemonset"; kubectl get daemonset; echo "kubectl get pod -o wide"; kubectl get pod -o wide; echo "kubectl get pod -L job-name"; kubectl get pod -L job-name; echo "kubectl get configmap"; kubectl get configmap; echo "kubectl get secret"; kubectl get secret;  echo "kubectl get secret/my-secrets -o yaml"; kubectl get secret/my-secrets -o yaml;  echo "kubectl get statefulset"; kubectl get statefulset;
+# kubectl create secret generic my-secrets --from-literal=mysql_user=ernie --from-literal=mysql_pass=HushHush
+# kubectl delete secret/my-secrets
+# we saw that imperative command for secret is exactly same as configmap
+# for declarative secret we want to encrypt it with base64 so that we do not store clear text in YAML, here we see same secret, ernie, in base64, is same as was generated imperatively:
+# echo -n ernie |base64
+# echo -n HushHush|base64
+# we see secret manifest is exactly same as configmap but data in encoded in base64
+# cat ~/repos/safari_gke_2/lesson_5/secrets/secretManifest.yaml 
+# kubectl apply -f secrets/secretManifest.yaml 
+# consuming secret almost the same as consuming configmap, except instead of configmapref, we use secretRef:
+# cat ~/repos/safari_gke_2/lesson_5/secrets/podManifestFromEnv.yaml 
+# kubectl apply -f secrets/podManifestFromEnv.yaml 
+# ..and we see that the pod has received the clear text of the secret
+# kubectl logs pod/my-pod
+# cat ~/repos/safari_gke_2/lesson_5/server.py   
+# cat ~/repos/safari_gke_2/lesson_5/wip/configmap.sh 
+# ./configmap.sh
+# kubectl apply -f server.yaml
+# we will use port forwarding to interact with our key-value db as it is in server-0
+# kubectl port-forward server-0 1080:80
+# kubectl port-forward server-0 1080:80 &
+# curl http://127.0.0.1:1080/save/title/Sapiens
+# curl http://localhost:1080/load/title
+# curl http://localhost:1080/load/author
+# curl http://localhost:1080/save/author/Yuval
+# curl http://localhost:1080/load/author
+# curl http://localhost:1080/allKeys
+# ps -ef |grep port-forward
+# kill -9 3446
+# kubectl port-forward server-2 1080:80 &
+# curl http://localhost:1080/allKeys
+# PROBLEM: No keys on server-2
+# it seems like we have 3 pods and 3 nodes and so the Volume where db is wont e on server-2, or maybe it would still not be there if it were only one node beause node-2 is a different pod?? 
+# so how do we create distributed database which i sthe whole point of StatefulSet?
+# kubectl scale statefulset/server --replicas=5
+# kubectl scale statefulset/server --replicas=3
+# 03:16:40 We create a service for these pods but we do not want a Loadbalancer becuase we need stable network identity, but LoadBalancer of deployment gives us ephemeral random pods
+# kubectl get service
+# echo "kubectl get deployment;"; kubectl get deployment; echo "kubectl get daemonset"; kubectl get daemonset; echo "kubectl get pod -o wide"; kubectl get pod -o wide; echo "kubectl get pod -L job-name"; kubectl get pod -L job-name; echo "kubectl get configmap"; kubectl get configmap; echo "kubectl get secret"; kubectl get secret;  echo "kubectl get secret/my-secrets -o yaml"; kubectl get secret/my-secrets -o yaml; echo "kubectl get statefulset"; kubectl get statefulset; echo "kubectl get service"; kubectl get service; echo "kubectl get pvc"; kubectl get pvc; echo "kubectl logs -f client"; kubectl logs -f client; echo "gcloud compute disks list|grep NAME"; gcloud compute disks list|grep NAME;
+# ..and we see the headless service named server
+#  kubectl get service
+#  NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+#  kubernetes   ClusterIP   34.118.224.1   <none>        443/TCP   45m
+#  server       ClusterIP   None           <none>        80/TCP    37m`
+# ..which gives us something very important: the DNS entries for each one of the members in that StatefulSet
+# if we do kubectl run --image=alpine --restart=never nslookup server|head -n 7
+# then we will see names like server-0.server.default.svc.cluster.loca
+# cat ~/repos/safari_gke_2/lesson_5/client.py 
+# ..which runs through alphabet, applys modulo to select server, calls /load/ to see if letter is there, prints H, for hit, if so, other wise calls /save/ to write it and prints W, otherwise prints . DOT to indicate an error
+# cat ~/repos/safari_gke_2/lesson_5/client.yaml 
+# which is a pod with image python:alpine taht runs pyton -u /var/scripts/client.py server-0.server, server-1.server, server-2.server and mounts configmap names scripts at /var/scripts
+# we see hardcoded server names because client is driver and needs to know
+# with memcached or cassandra there might be a library that does that for us, those DBs might have configuration that allows us to list the servers for sharding
+# now we delete existing configmap and uploade both server and client to new configmap
+# kubectl delete configmap scripts --ignore-not-found=true
+# kubectl create configmap scripts --from-file=../server.py --from-file=../client.py
+# ..and we see we are uploading every script through a configmap
+# ./configmap2.sh 
+# cat ./configmap2.sh 
+# first we start by pre-monitoring the client that we just uploaded and will apply shortly
+# kubectl logs client |head
+# kubectl logs -f client
+# kubectl apply -f ../client.yaml 
+#  kubectl logs -f clientm-426714-j7)$ 
+#                      abcdefghijklmnopqrstuvwxyz
+#                      --------------------------
+#                      12012012012012012012012012
+#                      --------------------------
+#  2024-07-20 16:55:35 wwwwwwwwwwwwwwwwwwwwwwwwww | hits = 0 (0%)
+#  2024-07-20 16:55:37 hhhhhhhhhhhhhhhhhhhhhhhhhh | hits = 26 (100%)
+# we see, above, that letter a went to server 1, b to server 2, c to 3, etc
+# the first time through alphabet, there are zero hits, 26 writes
+# the second and future runs all have 26 hits, 
+# now 03:25:00 lets do some damage
+# kubectl delete pod/server-1
+# ..and then we start to see, in the logs .hh.hh.hh.hh because there is an error, a DOT for the missing server
+# but after a while, k8s starts the deleted server again and we see hhhhhhhh again 100% hits rate
+# ..but before hhhhhh, we saw whhwhhwhhwhh because it had to repopulate those letters in the database on the new server
+# ..and in that way we also notice that the server forgot the data and the client had to tell it again, had to call /save/ to save those lost letters again
+# and that is the problem we solve next
+# cat ~/repos/safari_gke_2/lesson_5/server.py
+# we see in server.py that all 3 routes/functions first look for file _shutting_down_ and if found, they return 503 error instead of just sys.exit(1) to let client know something went wrong because server.py, now that it sees that file, knows that it is going down soon
+# cat ~/repos/safari_gke_2/lesson_5/server-disk.yaml 
+# we see in server-disk.yaml that we use preStop and postStart lifecycle hooks to touch and rm, respectively, that _shutting_down_ file
+# cat ~/repos/safari_gke_2/lesson_5/configmap.sh 
+# ./configmap.sh 
+# kubectl apply -f server-disk.yaml 
+# we see a new disk has been allocated for server-0, data-server-0 and a new drive was created in google; and server-1 pod is allocated and data-server-1 volume new pvc disk; server-2 pod, data-server-2 volume, and pvc
+# near bottom of server-disk.yaml we see volumeClaimTemplates which results in the allocation of those disks which have a capacity storage: and accessModes: ReadWriteOnce which can be read from multiple pods but cannot be written except by only one pod and the reason why is because each pod has its own private disk, this is NOT a shared disk among different pods, just one pod per disk
+# even if we shutdown cluster, that disk lives outside of k8s, so when we restart cluster, we will see that disk and the data in that disk
+# now we see that in action, an improvement from before when the server restarted and needed the client to write again that data that was lost
+# it had been acting like a cache but we want persistent storage in this case
+# the client is the same, not new, but now the server is new
+# kubectl apply -f client.yaml 
+# ..and again we see similar output:
+#kubectl logs -f client
+#                    abcdefghijklmnopqrstuvwxyz
+#                    --------------------------
+#                    12012012012012012012012012
+#                    --------------------------
+#2024-07-21 13:48:05 wwwwwwwwwwwwwwwwwwwwwwwwww | hits = 0 (0%)
+#2024-07-21 13:48:07 hhhhhhhhhhhhhhhhhhhhhhhhhh | hits = 26 (100%)
+# kubectl logs client |head -n 4
+#                      abcdefghijklmnopqrstuvwxyz
+#                      --------------------------
+#                      12012012012012012012012012
+#                      --------------------------
+# ./configmap2.sh 
+# kubectl apply -f server-disk.yaml
+# kubectl apply -f client.yaml 
+# kubectl logs -f client
+#                      abcdefghijklmnopqrstuvwxyz
+#                      --------------------------
+#                      12012012012012012012012012
+#                      --------------------------
+#  2024-07-21 22:56:08 wwwwwwwwwwwwwwwwwwwwwwwwww | hits = 0 (0%)
+#  2024-07-21 22:56:10 hhhhhhhhhhhhhhhhhhhhhhhhhh | hits = 26 (100%)
+#  2024-07-21 22:56:12 hhhhhhhhhhhhhhhhhhhhhhhhhh | hits = 26 (100%)
+#  2024-07-21 22:56:14 hhhhhhhhhhhhhhhhhhhhhhhhhh | hits = 26 (100%)
+# kubectl delete pod/server-1
+# after deleting server-1, we see the logs below snippeted, and now we have that lifecycle hook:
+# we see 5 in the logs because the client knows that the server is going down and client.py displays the first character, 5, of the status code in the error, 503, from HTTPError
+# ..but eventually the server is gone and it prints DOT, ., because there is no server anymore and it gets URLError
+# ..but later, when server-1 is restarted, we see it printing h again, not w, because the new server already has the data because it has been persisted to the disk and is there
+# kubectl logs -f client
+#  2024-07-21 22:58:04 hhhhhhhhhhhhhhhhhhhhhhhhhh | hits = 26 (100%)
+#  2024-07-21 22:58:06 5hh5hh5hh5hh5hh5hh5hh5hh5h | hits = 17 (65%)
+#  2024-07-21 22:58:08 5hh5hh5hh5hh5hh5hh5hh5hh5h | hits = 17 (65%)
+#  2024-07-21 22:58:10 .hh5hh.hh.hh.hh.hh.hh.hh5h | hits = 17 (65%)
+#  2024-07-21 22:58:12 .hh.hh.hh.hh.hh.hh.hh.hh.h | hits = 17 (65%)
+#  2024-07-21 22:58:15 .hh.hh.hh.hh.hh.hh.hh.hh.h | hits = 17 (65%)
+#  2024-07-21 22:58:17 .hh.hh.hh.hh.hh.hh.hh.hh.h | hits = 17 (65%)
+#  2024-07-21 22:58:19 .hh.hh.hh.hh.hh.hh.hh.hh.h | hits = 17 (65%)
+#  2024-07-21 22:58:21 .hh.hh.hh.hh.hh.hh.hh.hh.h | hits = 17 (65%)
+#  2024-07-21 22:58:23 .hh.hh.hh.hh.hh.hh.hh.hh.h | hits = 17 (65%)
+#  2024-07-21 22:58:25 hhhhhhhhhhhhhhhhhhhhhhhhhh | hits = 26 (100%)
+# similarly if we were to restart the cluster, with the same configuration, we will get the same PVCs linked to the volumes and the data would be there, not lost
+# ..and that is the story of StatefulSet
+# gcloud compute disks delete pvc-11f4cd1e-eb9c-4bb3-a668-bc519c659823 pvc-1bd4bf32-c773-4b14-98c0-2909062c5343 pvc-30e88e37-62c0-43ec-b709-70185dc03df8 pvc-566f6d5c-6360-4391-9f55-4052c6f1ecfb pvc-612c5a47-885e-40ba-a161-0f732cdfe6d3 pvc-b37c04f4-fac3-4615-b0c6-63295a750a8f pvc-b4ba1050-33c8-4b43-8c41-73e72022839c pvc-cd0e838d-e603-4748-b327-c6a96d75d3e8 pvc-e62a3cbb-5404-482a-af76-436914325a70
+# gcloud compute disks delete my-disk
+# gcloud compute disks list|grep NAME
