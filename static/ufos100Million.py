@@ -1,7 +1,8 @@
+import gzip
 f = open('ufos100.csv')
 lines = f.readlines()
-with open('/var/tmp/ufos100Million.csv', 'a') as f2:
-    for i in range(1000000):
+with gzip.open('/var/tmp/ufos100_00.csv', 'wb') as f2:
+    for i in range(100):
         f2.writelines(lines)
 
 f.close()
